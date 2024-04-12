@@ -1,19 +1,18 @@
 import pygame as pygame, sys
 from pygame.locals import *
 
+from Fondo import Fondo
+
 pygame.init()
 size = (128, 128)
 screen = pygame.display.set_mode(size)
 
-WHITE = (255, 255, 255)
+fondo = Fondo()
 colorFondo = (244, 204, 204)
 MENU_ITEMS = 8
 clock = pygame.time.Clock()
-fondo = pygame.image.load("src/img/fondos/salon.png")  # 128x128
 menuAdapter = pygame.image.load("src/img/iconos/menuAdapter.png")  # 43x43
 menuAdapterSelected = pygame.image.load("src/img/iconos/menuAdapterSelected.png")  # 43x43
-habitacion = 1
-piso = 0
 menu = False
 menu_selected = 0
 submenu = False
@@ -25,33 +24,12 @@ habitaciones = [[pygame.image.load("src/img/fondos/jardin.png"), pygame.image.lo
                 [pygame.image.load("src/img/fondos/dormitorio.png"), pygame.image.load("src/img/fondos/banno.png")]]
 
 
-def setDireccion(direccion): # Right: 0, Up: 1, Left: 2, Down: 3
-    global piso
-    global habitacion
-    global fondo
-    if direccion == 0:
-        if habitacion < MAX_HABITACIONES[piso]:
-            habitacion = habitacion + 1
-    if direccion == 1:
-        if piso < MAX_PISO:
-            piso = piso + 1
-            habitacion = 0
-    if direccion == 2:
-        if habitacion > 0:
-            habitacion = habitacion - 1
-    if direccion == 3:
-        if piso > 0:
-            piso = piso - 1
-            habitacion = 1
-    fondo = habitaciones[piso][habitacion]
-
-
 def leerEventos():
-    global menu, menu_selected, submenu_selected, submenu
+    global menu, menu_selected, submenu_selected, submenu, fondo
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             sys.exit()
-        if event.type == pygame.KEYUP:
+        if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
                 menu = not menu
             if event.key == pygame.K_UP:
@@ -59,25 +37,25 @@ def leerEventos():
                     if menu_selected - 3 >= 0:
                         menu_selected = menu_selected - 3
                 else:
-                    setDireccion(1)  # Right: 0, Up: 1, Left: 2, Down: 3
+                    fondo.setDireccion(1)  # Right: 0, Up: 1, Left: 2, Down: 3
             if event.key == pygame.K_DOWN:
                 if menu:
                     if menu_selected + 3 <= MENU_ITEMS:
                         menu_selected = menu_selected + 3
                 else:
-                    setDireccion(3)  # Right: 0, Up: 1, Left: 2, Down: 3
+                    fondo.setDireccion(3)  # Right: 0, Up: 1, Left: 2, Down: 3
             if event.key == pygame.K_LEFT:
                 if menu:
                     if menu_selected - 1 >= 0:
                         menu_selected = menu_selected - 1
                 else:
-                    setDireccion(2)  # Right: 0, Up: 1, Left: 2, Down: 3
+                    fondo.setDireccion(2)  # Right: 0, Up: 1, Left: 2, Down: 3
             if event.key == pygame.K_RIGHT:
                 if menu:
                     if menu_selected + 1 <= MENU_ITEMS:
                         menu_selected = menu_selected + 1
                 else:
-                    setDireccion(0)  # Right: 0, Up: 1, Left: 2, Down: 3
+                    fondo.setDireccion(0)  # Right: 0, Up: 1, Left: 2, Down: 3
             if event.key == pygame.K_a:
                 if menu:
                     if menu_selected == 0:
@@ -166,7 +144,7 @@ def dibujarPantalla():
                 marco = menuAdapter
             screen.blit(marco, (2 + (i % 3) * 42, 2 + (i // 3) * 42))
     else:
-        screen.blit(fondo, (0, 0))
+        fondo.dibujar(screen)
     pygame.display.flip()
 
 
